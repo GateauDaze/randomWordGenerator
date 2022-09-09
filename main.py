@@ -1,12 +1,13 @@
 from tkinter import *
 import time
+import random
 mainWindow = Tk()
 rootFrame = Frame(mainWindow)
 rootFrame['borderwidth'] = 5
 rootFrame['relief'] = 'sunken'
 
-TeamAWordList=["a", "b", "c"]
-TeamBWordList=["d", "e", "f"]
+TeamAWordList=["a", "b", "c", "d", "e", "f", "g", "h", "i", "gumin kuchai"]
+TeamBWordList=["d", "e", "f", "foxes", "let's get married"]
 
 def createWindow():
     mainWindow.title("Random Word Generator")
@@ -81,15 +82,31 @@ def createTeamMenu(teamName):
 
 def createInGameMenu(teamName):
     print("Game for Team " + teamName + " started...")
-    continueGame = True
+    global startTime
+    startTime = time.time()
+    
     global teamScore
     teamScore = 0
+    
     global wordCounter
     wordCounter = 0
+    
     global passedWords
     passedWords = 0
+
     global maximumScore
-    maximumScore = 3
+    maximumScore = 0
+
+    global TeamAWordList
+    global TeamBWordList
+    if teamName == "A":
+        maximumScore = len(TeamAWordList)
+    elif teamName == "B":
+        maximumScore = len(TeamBWordList)
+
+    # Shuffle word list
+    random.shuffle(TeamAWordList)
+    random.shuffle(TeamBWordList)
 
     inGameMenuFrame = Frame(rootFrame)
 
@@ -101,9 +118,9 @@ def createInGameMenu(teamName):
     inGameMenuWordToGuessLabel = Label(inGameMenuWordFrame, text=inGameMenuWordToGuessText, font=('Helvetica', 48))
 
     if teamName == "A":
-        inGameMenuWordToGuessLabel.configure(text="Sample A")
+        inGameMenuWordToGuessLabel.configure(text=TeamAWordList[wordCounter])
     elif teamName == "B":
-        inGameMenuWordToGuessLabel.configure(text="Sample B")
+        inGameMenuWordToGuessLabel.configure(text=TeamBWordList[wordCounter])
 
     inGameMenuWordGuideLabel.grid(column=0, row=0)
     inGameMenuWordToGuessLabel.grid(column=0, row=1)
@@ -124,7 +141,7 @@ def createInGameMenu(teamName):
 
 def createResultMenu():
     print("Creating results page...")
-
+    endTime = time.time()
     resultMenuFrame = Frame(rootFrame)
 
     # Row 0:
@@ -134,7 +151,10 @@ def createResultMenu():
     resultMenuPassedWordsText = "Total Passed Words: " + str(passedWords) + "/" + str(maximumScore)
     resultMenuPassedWordsLabel = Label(resultMenuScoreFrame, text=resultMenuPassedWordsText, font=('Helvetica', 14))
     # TODO: implement timer and update text
-    resultMenuTimerText = "Time: mm:ss"
+    elapsedTime = endTime - startTime
+    minutes = (int)(elapsedTime // 60)
+    seconds = (int)(elapsedTime % 60)
+    resultMenuTimerText = "Time: "+str(minutes)+":"+str(seconds)
     resultMenuTimerLabel = Label(resultMenuScoreFrame, text=resultMenuTimerText, font=('Helvetica', 14))
     resultMenuTotalScoreLabel.grid(column=0, row=0)
     resultMenuPassedWordsLabel.grid(column=0, row=1)
@@ -171,15 +191,13 @@ def countdownTimer(timer, updateLabel):
 def checkGameOver():
     if teamScore == maximumScore or wordCounter == maximumScore:
         print("Game Over")
-        # TODO: display result page
-        destroyMainWindowWidgets()
-        createResultMenu()
+        return True
     else:
         print("Keep going")
-        # TODO: update word
+        return False
 
 def updateWord(updatedLabel, wordToUpdate):
-    print("Updating word")
+    print("Updating word to: " + wordToUpdate)
     updatedLabel.configure(text=wordToUpdate)
     rootFrame.update()
 
@@ -215,7 +233,15 @@ def inGameMenuPassButtonCallback(teamName, wordToGuessLabel):
     global wordCounter
     wordCounter += 1
     print("Current word count: " + str(wordCounter))
-    checkGameOver()
+    gameOverState = checkGameOver()
+    if gameOverState == True:
+        destroyMainWindowWidgets()
+        createResultMenu()
+    elif gameOverState == False:
+        if teamName == "A":
+            updateWord(wordToGuessLabel, TeamAWordList[wordCounter])
+        elif teamName == "B":
+            updateWord(wordToGuessLabel, TeamBWordList[wordCounter])
 
 # Callback for 'Correct Button' in 'inGameMenu':
 def inGameMenuCorrectButtonCallback(teamName, wordToGuessLabel):
@@ -226,8 +252,15 @@ def inGameMenuCorrectButtonCallback(teamName, wordToGuessLabel):
     teamScore += 1
     print("Current word count: " +str(wordCounter))
     print("Current score: " + str(teamScore))
-
-    checkGameOver()
+    gameOverState = checkGameOver()
+    if gameOverState == True:
+        destroyMainWindowWidgets()
+        createResultMenu()
+    elif gameOverState == False:
+        if teamName == "A":
+            updateWord(wordToGuessLabel, TeamAWordList[wordCounter])
+        elif teamName == "B":
+            updateWord(wordToGuessLabel, TeamBWordList[wordCounter])
 
 # Below is main...
 print("Generating Window...")
