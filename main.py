@@ -1,13 +1,20 @@
 from tkinter import *
-import time
-import random
+import time, random
+
 mainWindow = Tk()
 rootFrame = Frame(mainWindow)
 rootFrame['borderwidth'] = 5
 rootFrame['relief'] = 'sunken'
 
-TeamAWordList=["a", "b", "c", "d", "e", "f", "g", "h", "i", "gumin kuchai"]
-TeamBWordList=["d", "e", "f", "foxes", "let's get married"]
+filenameA = "testWordList1.txt"
+filenameB = "testWordList2.txt"
+TeamAWordList = open(filenameA).read().splitlines()
+TeamBWordList = open(filenameB).read().splitlines()
+
+#TeamAWordList=["a", "b", "c", "d", "e", "f", "g", "h", "i", "gumin kuchai"]
+#TeamBWordList=["d", "e", "f", "foxes", "let's get married"]
+
+
 
 def createWindow():
     mainWindow.title("Random Word Generator")
@@ -18,7 +25,7 @@ def createMainMenu():
 
     # Text variables:
     mainMenuTitleText = "Random Word Generator"
-    mainMenuAuthorText = "Author, 2022 Author@GitHub.com"
+    mainMenuAuthorText = "Gateau, 2022 GateauDaze@GitHub.com"
 
     # Row 0:
     mainMenuTitleButtonFrame = Frame(rootFrame)
@@ -85,6 +92,9 @@ def createInGameMenu(teamName):
     global startTime
     startTime = time.time()
     
+    global TeamAWordList
+    global TeamBWordList
+
     global teamScore
     teamScore = 0
     
@@ -95,13 +105,10 @@ def createInGameMenu(teamName):
     passedWords = 0
 
     global maximumScore
-    maximumScore = 0
-
-    global TeamAWordList
-    global TeamBWordList
-    if teamName == "A":
+    maximumScore = 100 
+    if teamName == "A" and len(TeamAWordList) < maximumScore:
         maximumScore = len(TeamAWordList)
-    elif teamName == "B":
+    elif teamName == "B" and len(TeamBWordList) < maximumScore:
         maximumScore = len(TeamBWordList)
 
     # Shuffle word list
