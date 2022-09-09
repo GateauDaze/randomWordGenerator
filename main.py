@@ -11,11 +11,6 @@ filenameB = "testWordList2.txt"
 TeamAWordList = open(filenameA).read().splitlines()
 TeamBWordList = open(filenameB).read().splitlines()
 
-#TeamAWordList=["a", "b", "c", "d", "e", "f", "g", "h", "i", "gumin kuchai"]
-#TeamBWordList=["d", "e", "f", "foxes", "let's get married"]
-
-
-
 def createWindow():
     mainWindow.title("Random Word Generator")
     mainWindow.geometry("800x600")
