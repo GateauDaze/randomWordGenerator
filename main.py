@@ -84,10 +84,12 @@ def createInGameMenu(teamName):
     continueGame = True
     global teamScore
     teamScore = 0
-    global maximumScore
-    maximumScore = 3
     global wordCounter
     wordCounter = 0
+    global passedWords
+    passedWords = 0
+    global maximumScore
+    maximumScore = 3
 
     inGameMenuFrame = Frame(rootFrame)
 
@@ -110,7 +112,7 @@ def createInGameMenu(teamName):
     # Row 1:
     inGameMenuButtonFrame = Frame(inGameMenuFrame)
     inGameMenuPassButton = Button(inGameMenuButtonFrame, text="Pass!", font=('Helvetica', 14), command=lambda:inGameMenuPassButtonCallback(teamName, inGameMenuWordToGuessLabel))
-    inGameMenuCorrectButton = Button(inGameMenuButtonFrame, text="Correct!", font=('Helvetica', 14), command=lambda:inGameMenuCorrectButtonCallback(teamName, teamScore, wordCounter, inGameMenuWordToGuessLabel))
+    inGameMenuCorrectButton = Button(inGameMenuButtonFrame, text="Correct!", font=('Helvetica', 14), command=lambda:inGameMenuCorrectButtonCallback(teamName, inGameMenuWordToGuessLabel))
 
     inGameMenuPassButton.grid(column=0, row=0)
     inGameMenuCorrectButton.grid(column=1, row=0)
@@ -119,6 +121,36 @@ def createInGameMenu(teamName):
 
     # Pack widgets
     rootFrame.pack(ipadx=5, ipady=5, anchor=CENTER, expand=True)
+
+def createResultMenu():
+    print("Creating results page...")
+
+    resultMenuFrame = Frame(rootFrame)
+
+    # Row 0:
+    resultMenuScoreFrame = Frame(resultMenuFrame)
+    resultMenuTotalScoreText = "Total Score: " + str(teamScore) +"/"+str(maximumScore)
+    resultMenuTotalScoreLabel = Label(resultMenuScoreFrame, text=resultMenuTotalScoreText, font=('Helvetica', 14))
+    resultMenuPassedWordsText = "Total Passed Words: " + str(passedWords) + "/" + str(maximumScore)
+    resultMenuPassedWordsLabel = Label(resultMenuScoreFrame, text=resultMenuPassedWordsText, font=('Helvetica', 14))
+    # TODO: implement timer and update text
+    resultMenuTimerText = "Time: mm:ss"
+    resultMenuTimerLabel = Label(resultMenuScoreFrame, text=resultMenuTimerText, font=('Helvetica', 14))
+    resultMenuTotalScoreLabel.grid(column=0, row=0)
+    resultMenuPassedWordsLabel.grid(column=0, row=1)
+    resultMenuTimerLabel.grid(column=0, row=2)
+    resultMenuScoreFrame.grid(column=0, row=0)
+    # Row 1:
+    # Return to Main Menu
+    resultMenuToMainMenuFrame = Frame(resultMenuFrame)
+    resultMenuToMainMenuButton = Button(resultMenuToMainMenuFrame, text="To Main Menu", font=('Helvetica', 14), command=gameMenuMainMenuButtonCallback)
+    resultMenuToMainMenuButton.pack()
+    resultMenuToMainMenuFrame.grid(column=0, row=1)
+    resultMenuFrame.pack()
+
+    # Pack widgets
+    rootFrame.pack(ipadx=5, ipady=5, anchor=CENTER, expand=True)
+    
 
 # Functions for window control
 def destroyMainWindowWidgets():
@@ -139,39 +171,65 @@ def countdownTimer(timer, updateLabel):
 def checkGameOver():
     if teamScore == maximumScore or wordCounter == maximumScore:
         print("Game Over")
+        # TODO: display result page
+        destroyMainWindowWidgets()
+        createResultMenu()
     else:
         print("Keep going")
-# Callbacks for Main Menu:
+        # TODO: update word
+
+def updateWord(updatedLabel, wordToUpdate):
+    print("Updating word")
+    updatedLabel.configure(text=wordToUpdate)
+    rootFrame.update()
+
+# Callback for Main Menu:
 def mainMenuStartButtonCallback():
     print("Main menu start button pressed...")
     destroyMainWindowWidgets()
     createGameMenu()
 
-# Callbacks for Game Menu:
+# Callback for Team A Button in Game Menu:
 def gameMenuTeamAButtonCallback():
     print("Team A Button pressed...")
     destroyMainWindowWidgets()
     createTeamMenu("A")
 
+# Callback for Team B Button in Game Menu:
 def gameMenuTeamBButtonCallback():
     print("Team B Button pressed...")
     destroyMainWindowWidgets()
     createTeamMenu("B")
 
+# Callback for 'To Main Menu' Button in Game Menu: 
 def gameMenuMainMenuButtonCallback():
     print("Going back to main menu...")
     destroyMainWindowWidgets()
     createMainMenu()
 
+# Callback for 'Pass Button' in 'inGameMenu':
 def inGameMenuPassButtonCallback(teamName, wordToGuessLabel):
     print("Team " + teamName + " passed a word")
+    global passedWords
+    passedWords += 1
+    global wordCounter
+    wordCounter += 1
+    print("Current word count: " + str(wordCounter))
     checkGameOver()
 
-def inGameMenuCorrectButtonCallback(teamName, teamScore, wordCounter, wordToGuessLabel):
+# Callback for 'Correct Button' in 'inGameMenu':
+def inGameMenuCorrectButtonCallback(teamName, wordToGuessLabel):
     print("Team " + teamName + " correctly guessed the word")
+    global wordCounter
+    wordCounter += 1
+    global teamScore
+    teamScore += 1
+    print("Current word count: " +str(wordCounter))
+    print("Current score: " + str(teamScore))
+
     checkGameOver()
 
-
+# Below is main...
 print("Generating Window...")
 createWindow() # generate window
 createMainMenu() # generate the main menu
