@@ -87,8 +87,11 @@ def createInGameMenu(teamName):
     global startTime
     startTime = time.time()
     
-    global TeamAWordList
-    global TeamBWordList
+    global currentWordList
+    if teamName == "A":
+        currentWordList = TeamAWordList
+    elif teamName == "B":
+        currentWordList = TeamBWordList
 
     global teamScore
     teamScore = 0
@@ -100,15 +103,12 @@ def createInGameMenu(teamName):
     passedWords = 0
 
     global maximumScore
-    maximumScore = 100 
-    if teamName == "A" and len(TeamAWordList) < maximumScore:
-        maximumScore = len(TeamAWordList)
-    elif teamName == "B" and len(TeamBWordList) < maximumScore:
-        maximumScore = len(TeamBWordList)
+    maximumScore = 100
+    if len(currentWordList) < maximumScore:
+        maximumScore = len(currentWordList) 
 
     # Shuffle word list
-    random.shuffle(TeamAWordList)
-    random.shuffle(TeamBWordList)
+    random.shuffle(currentWordList)
 
     inGameMenuFrame = Frame(rootFrame)
 
@@ -119,10 +119,7 @@ def createInGameMenu(teamName):
     inGameMenuWordToGuessText = "Sample"
     inGameMenuWordToGuessLabel = Label(inGameMenuWordFrame, text=inGameMenuWordToGuessText, font=('Helvetica', 48))
 
-    if teamName == "A":
-        inGameMenuWordToGuessLabel.configure(text=TeamAWordList[wordCounter])
-    elif teamName == "B":
-        inGameMenuWordToGuessLabel.configure(text=TeamBWordList[wordCounter])
+    inGameMenuWordToGuessLabel.configure(text=currentWordList[wordCounter])
 
     inGameMenuWordGuideLabel.grid(column=0, row=0)
     inGameMenuWordToGuessLabel.grid(column=0, row=1)
@@ -148,9 +145,9 @@ def createResultMenu():
 
     # Row 0:
     resultMenuScoreFrame = Frame(resultMenuFrame)
-    resultMenuTotalScoreText = "Total Score: " + str(teamScore) +"/"+str(maximumScore)
+    resultMenuTotalScoreText = "Total Score: " + str(teamScore) +"/"+str(wordCounter)
     resultMenuTotalScoreLabel = Label(resultMenuScoreFrame, text=resultMenuTotalScoreText, font=('Helvetica', 14))
-    resultMenuPassedWordsText = "Total Passed Words: " + str(passedWords) + "/" + str(maximumScore)
+    resultMenuPassedWordsText = "Total Passed Words: " + str(passedWords) + "/" + str(wordCounter)
     resultMenuPassedWordsLabel = Label(resultMenuScoreFrame, text=resultMenuPassedWordsText, font=('Helvetica', 14))
     # TODO: implement timer and update text
     elapsedTime = endTime - startTime
@@ -191,7 +188,7 @@ def countdownTimer(timer, updateLabel):
     mainWindow.update()
 
 def checkGameOver():
-    if teamScore == maximumScore or wordCounter == maximumScore:
+    if teamScore == maximumScore or wordCounter == len(currentWordList):
         print("Game Over")
         return True
     else:
