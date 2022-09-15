@@ -72,6 +72,7 @@ def createGameMenu():
     rootFrame.pack(ipadx=5, ipady=5, anchor=CENTER, expand=True)
 
 def createTeamMenu(teamName):
+    teamMenuTimer = Frame()
     print("Creating Team " + teamName  +" Menu...")
     print("Word Count: " + str(maximumScore.get()))
     # Row 0:
@@ -88,9 +89,9 @@ def createTeamMenu(teamName):
     rootFrame.pack(ipadx=5, ipady=5, anchor=CENTER, expand=True)
 
     # countdown before game starts...
-    countdownLabel(teamAGameStartIn, teamAMenuCountdownLabel)
-    rootFrame.after(teamAGameStartIn*1000, destroyMainWindowWidgets)
-    rootFrame.after(teamAGameStartIn*1000, lambda:createInGameMenu(teamName))
+    countdownLabel(teamMenuTimer, teamAGameStartIn, teamAMenuCountdownLabel)
+    teamMenuTimer.after(teamAGameStartIn*1000, destroyMainWindowWidgets)
+    teamMenuTimer.after(teamAGameStartIn*1000, lambda:createInGameMenu(teamName))
 
 def createInGameMenu(teamName):
     print("Game for Team " + teamName + " started...")
@@ -188,15 +189,16 @@ def destroyMainWindowWidgets():
     for widgets in widgetList:
         widgets.pack_forget()
 
-def countdownLabel(remainingTime, updateLabel):
+def countdownLabel(timerObject, remainingTime, updateLabel):
     updateLabel.configure(text=str(remainingTime))
     rootFrame.update()
     if remainingTime != 0:
         print("Countdown Remaining Time: " + str(remainingTime))
         remainingTime -=1
-        rootFrame.after(1000, lambda:countdownLabel(remainingTime, updateLabel))
+        timerObject.after(1000, lambda:countdownLabel(timerObject, remainingTime, updateLabel))
     else:
         print("Countdown complete")
+        timerObject.destroy()
 
 def countdownTimer(timer, updateLabel):
     mainWindow.update()
